@@ -4,6 +4,9 @@
     "require": {
         "php": "^7.0.8",
         "ext-iconv": "*",
+        "friendsofsymfony/rest-bundle": "^2.3",
+        "jms/serializer-bundle": "^2.3",
+        "nelmio/api-doc-bundle": "^3.2",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "^3.4",
         "symfony/console": "^3.4",
@@ -13,7 +16,7 @@
         "symfony/framework-bundle": "^3.4",
         "symfony/lts": "^3",
         "symfony/monolog-bundle": "^3.1",
-        "symfony/orm-pack": "*",
+        "symfony/orm-pack": "^1.0",
         "symfony/process": "^3.4",
         "symfony/security-bundle": "^3.4",
         "symfony/serializer-pack": "*",

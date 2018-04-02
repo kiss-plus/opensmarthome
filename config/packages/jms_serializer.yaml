@@ -1,0 +1,15 @@
+jms_serializer:
+    visitors:
+        xml:
+            format_output: '%kernel.debug%'
+        json:
+            options: JSON_PRETTY_PRINT
+    metadata:
+        cache: file
+        debug: %kernel.debug%
+        file_cache:
+            dir: "%kernel.cache_dir%/serializer"
+        directories:
+            application:
+                namespace_prefix: App\Entity
+                path: "%kernel.project_dir%/src/Resources/config/serializer"

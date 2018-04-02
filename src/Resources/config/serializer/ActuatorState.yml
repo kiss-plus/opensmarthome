@@ -1,0 +1,16 @@
+App\Entity\ActuatorState:
+  xml_root_name: actuatorState
+  exclusion_policy: none
+  virtual_properties:
+    description:
+      type: string
+      xml_element:
+        cdata: false
+  properties:
+    allowedStates:
+      exclude: true
+    id:
+      exclude: true
+    code:
+      xml_element:
+        cdata: false

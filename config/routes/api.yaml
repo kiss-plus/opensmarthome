@@ -1,0 +1,4 @@
+users:
+  prefix: api/
+  type: rest
+  resource: App\Controller\ActuatorController

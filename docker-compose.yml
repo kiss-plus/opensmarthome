@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: docker/web/Dockerfile
-    networks:
-      app-net: ~
     volumes:
       - ".:/var/www/opensmarthome"
 
@@ -13,8 +11,6 @@ services:
     image: mysql:latest
     ports:
       - "3306:3306"
-    networks:
-      app-net: ~
     environment:
       MYSQL_ROOT_PASSWORD: topsecret
       MYSQL_DATABASE: opensmarthome
@@ -27,19 +23,9 @@ services:
     ports:
       - 8080:8080
       - 80:80
-    networks:
-      app-net: ~
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
 
   broker:
     image: rabbitmq:3-management
     hostname: broker
-
-networks:
-  app-net:
-    ipam:
-      config:
-      - subnet: 10.10.0.0/24
-        gateway: 10.10.0.1

@@ -1,0 +1,18 @@
+App\Entity\DigitalActuator:
+  xml_root_name: digitalActuator
+  exclusion_policy: none
+  properties:
+    id:
+      skip_when_empty: false
+      type: string
+      xml_element:
+        cdata: false
+    name:
+      skip_when_empty: false
+      type: string
+      xml_element:
+        cdata: false
+    currentState:
+      expose: true
+      exclude: false
+      type: 'App\Entity\ActuatorState'
