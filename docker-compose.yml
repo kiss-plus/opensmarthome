@@ -1,31 +1,76 @@
-version: "2"
+version: "3.6"
 services:
+  proxy:
+    image: opensmarthome/proxy:dev
+    build:
+      context: docker/traefik
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+      placement:
+        constraints:
+          - node.role == manager
+    command:
+      - --docker
+      - --docker.swarmmode
+
   web:
+    image: opensmarthome/frontend:dev
     build:
       context: .
       dockerfile: docker/web/Dockerfile
     volumes:
       - ".:/var/www/opensmarthome"
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    deploy:
+      labels:
+        - "traefik.port=80"
+        - "traefik.frontend.rule=Host:web.opensmarthome.loc"
+
+  portainer:
+    image: portainer/portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    deploy:
+      labels:
+        - "traefik.port=9000"
+        - "traefik.frontend.rule=Host:portainer.opensmarthome.loc"
 
   database:
-    image: mysql:latest
+    image: mysql:5
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: topsecret
-      MYSQL_DATABASE: opensmarthome
-      MYSQL_USER: osh_user
-      MYSQL_PASSWORD: osh_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_DATABASE_FILE=/run/secrets/db_name
+      - MYSQL_USER_FILE=/run/secrets/db_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+    secrets:
+      - db_root_password
+      - db_name
+      - db_user
+      - db_password
 
-  proxy:
-    build:
-      context: docker/traefik
-    ports:
-      - 8080:8080
-      - 80:80
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+secrets:
+  db_root_password:
+    file: ./docker/secrets/db_root_password
+  db_name:
+    file: ./docker/secrets/db_name
+  db_user:
+    file: ./docker/secrets/db_user
+  db_password:
+    file: ./docker/secrets/db_password
 
-  broker:
-    image: rabbitmq:3-management
-    hostname: broker
+volumes:
+  portainer_data: ~

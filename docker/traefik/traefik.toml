@@ -11,5 +11,6 @@ defaultEntryPoints = ["http"]
 address = ":8080"
 
 [docker]
-domain = "loc"
+endpoint="unix://var/run/docker.sock"
 watch = true
+swarmMode = true
