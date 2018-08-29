@@ -1,4 +1,4 @@
-users:
-  prefix: api/
+app.actuators.get:
+  prefix: /api
   type: rest
   resource: App\Controller\ActuatorController

@@ -2,55 +2,75 @@
 
 namespace App\Controller;
 
-use App\Entity\DigitalActuator;
-use App\Repository\ActuatorRepository;
-use App\Entity\Actuators;
-use FOS\RestBundle\Routing\ClassResourceInterface;
+use App\Command\CreateActuator;
+use App\CommandHandler\Creation;
+use App\Domain\Actuator\Actuator;
+use App\Domain\Actuator\Type\Type;
+use App\Domain\Actuators;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\FOSRestController;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class ActuatorController implements ClassResourceInterface
+class ActuatorController extends FOSRestController
 {
     /**
-     * @var ActuatorRepository
+     * @Rest\View()
      */
-    private $actuatorRepository;
-
-    public function __construct(ActuatorRepository $actuatorRepository)
+    public function getActuatorsAction(): Actuators
     {
-        $this->actuatorRepository = $actuatorRepository;
+        return new Actuators(new \ArrayObject());
     }
 
-    public function cgetAction(): Actuators
+    /**
+     * @Rest\View()
+     */
+    public function getActuatorAction(string $uuid): ?Actuator
     {
-        return new Actuators($this->actuatorRepository->findAll());
+        return new Actuator();
     }
 
-    public function getAction(string $actuatorId): DigitalActuator
+    public function postActuatorAction(Request $request): Response
     {
-        return $this->actuatorRepository->find($actuatorId);
+        error_reporting(E_ALL & ~E_NOTICE);
+        try {
+            $uuid = Uuid::uuid4();
+            $createActuator = new CreateActuator(Type::DIGITAL, $request->get('name'), $uuid->toString());
+            $serializedCommand = $this
+                ->get('jms_serializer')
+                ->serialize($createActuator, 'json');
+            $this
+                ->get('old_sound_rabbit_mq.actuators_producer')
+                ->publish($serializedCommand);
+        } catch (\Exception $ex) {
+            return new Response(
+                "I'm sorry, I could't register this request. Try again later",
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+        return new Response(
+            "Everything is cool, you can now take a look at resource with ID " . $uuid->toString(),
+            Response::HTTP_ACCEPTED
+        );
     }
 
-    public function postAction(Request $request)
-    {
-        return print_r($request->getContent(), true);
-    }
-
-    public function putAction(string $actuatorId)
+    public function putActuatorAction(string $actuatorId)
     {
 
     }
 
-    public function patchOnAction(string $actuatorId)
+    public function patchActuatorOnAction(string $actuatorId)
     {
 
     }
 
-    public function patchOffAction(string $actuatorId)
+    public function patchActuatorOffAction(string $actuatorId)
     {
 
     }
 
-    public function patchToggleAction(string $actuatorId)
+    public function patchActuatorToggleAction(string $actuatorId)
     {
 
     }

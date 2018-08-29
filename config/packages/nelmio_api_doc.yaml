@@ -1,9 +1,34 @@
 nelmio_api_doc:
     documentation:
-        info:
-            title: My App
-            description: This is an awesome app!
-            version: 1.0.0
+
+      info:
+        title: My App
+        description: This is an awesome app!
+        version: 1.0.0
+
+      paths:
+        /api/actuators:
+          post:
+            summary: "creates new actuator resource"
+            requestBody:
+              required: true
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/definitions/Actuator'
+
+      definitions:
+        Actuator:
+          properties:
+            name:
+              type: string
+            type:
+              type: string
+              enum:
+                - "digital"
+                - "analog"
+
     areas: # to filter documented areas
-        path_patterns:
-            - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
+      path_patterns:
+        - ^/api # Accepts routes under /api except /api/doc
+

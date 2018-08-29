@@ -1,61 +1,120 @@
 version: "3.6"
 services:
   proxy:
-    image: opensmarthome/proxy:dev
-    build:
-      context: docker/traefik
+    image: traefik
     ports:
       - 80:80
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
-      restart_policy:
-        condition: any
-        delay: 5s
-        max_attempts: 3
       placement:
         constraints:
           - node.role == manager
     command:
       - --docker
+      - --docker.watch
       - --docker.swarmmode
+      - --docker.domain=opensmarthome.loc
+      - --debug
+      - --api
 
-  web:
-    image: opensmarthome/frontend:dev
+  actuators-read:
+    image: opensmarthome/actuators
     build:
       context: .
       dockerfile: docker/web/Dockerfile
     volumes:
       - ".:/var/www/opensmarthome"
+    environment:
+      - APP_ENV=dev
+      - MICROSERVICE=actuators-read
     secrets:
       - db_name
       - db_user
       - db_password
+      - db_host
+      - db_port
     deploy:
       labels:
         - "traefik.port=80"
-        - "traefik.frontend.rule=Host:web.opensmarthome.loc"
+        - "traefik.frontend.rule=Host:web.opensmarthome.loc;Method:GET"
+
+  actuators-write:
+    image: opensmarthome/actuators
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    volumes:
+    - ".:/var/www/opensmarthome"
+    environment:
+    - APP_ENV=dev
+    - MICROSERVICE=actuators-write
+    secrets:
+    - db_name
+    - db_user
+    - db_password
+    - db_host
+    - db_port
+    deploy:
+      labels:
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:web.opensmarthome.loc;Method:POST"
+
+  actuators-write-worker:
+    image: opensmarthome/actuators-write-worker
+    environment:
+      - APP_ENV=dev
+    build:
+      context: .
+      dockerfile: docker/worker/Dockerfile
+    volumes:
+    - ".:/var/opensmarthome"
+    secrets:
+    - db_name
+    - db_user
+    - db_password
+    - db_host
+    - db_port
 
   portainer:
     image: portainer/portainer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
     deploy:
       labels:
         - "traefik.port=9000"
         - "traefik.frontend.rule=Host:portainer.opensmarthome.loc"
+
+  commands-bus:
+    image: rabbitmq:3-management
+    deploy:
+      labels:
+        - "traefik.port=15672"
+        - "traefik.frontend.rule=Host:commands.opensmarthome.loc"
+        - "traefik.docker.network=opensmarthome_default"
+    ports:
+      - 5672:5672
+
+  events-bus:
+    image: rabbitmq:3-management
+    deploy:
+      labels:
+      - "traefik.port=15672"
+      - "traefik.frontend.rule=Host:events.opensmarthome.loc"
+      - "traefik.docker.network=opensmarthome_default"
+    ports:
+    - 5673:5672
 
   database:
     image: mysql:5
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
-      - MYSQL_DATABASE_FILE=/run/secrets/db_name
-      - MYSQL_USER_FILE=/run/secrets/db_user
-      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+      - MYSQL_ROOT_PASSWORD_FILE=/var/run/secrets/db_root_password
+      - MYSQL_DATABASE_FILE=/var/run/secrets/db_name
+      - MYSQL_USER_FILE=/var/run/secrets/db_user
+      - MYSQL_PASSWORD_FILE=/var/run/secrets/db_password
     secrets:
       - db_root_password
       - db_name
@@ -64,13 +123,17 @@ services:
 
 secrets:
   db_root_password:
-    file: ./docker/secrets/db_root_password
+    file: ./docker/secrets/db_root_password.example
   db_name:
-    file: ./docker/secrets/db_name
+    file: ./docker/secrets/db_name.example
   db_user:
-    file: ./docker/secrets/db_user
+    file: ./docker/secrets/db_user.example
   db_password:
-    file: ./docker/secrets/db_password
+    file: ./docker/secrets/db_password.example
+  db_host:
+    file: ./docker/secrets/db_host.example
+  db_port:
+    file: ./docker/secrets/db_port.example
 
 volumes:
   portainer_data: ~

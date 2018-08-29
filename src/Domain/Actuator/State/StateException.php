@@ -1,7 +1,7 @@
 <?php
-namespace App\Entity;
+namespace App\Domain\Actuator\State;
 
-class ActuatorStateException extends \DomainException
+class StateException extends \DomainException
 {
 
     public function __construct($stateValue)

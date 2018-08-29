@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Domain;
 
+use App\Domain\Actuator\Actuator;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
@@ -11,14 +12,14 @@ use JMS\Serializer\Annotation as Serializer;
 class Actuators
 {
     /**
-     * @var \ArrayObject|DigitalActuator[]
+     * @var \ArrayObject|Actuator[]
      * @Serializer\XmlList(entry="actuator", inline=true)
      * @Serializer\Type("array<App\Entity\DigitalActuator>")
      */
     private $actuators;
 
     /**
-     * @param DigitalActuator[]|\ArrayObject $itemsactuators
+     * @param Actuator[]|\ArrayObject $itemsactuators
      */
     public function __construct(\ArrayObject $itemsactuators)
     {
