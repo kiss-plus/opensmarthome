@@ -27,7 +27,7 @@ services:
     volumes:
       - ".:/var/www/opensmarthome"
     environment:
-      - APP_ENV=dev
+      - APP_ENV=prod
       - MICROSERVICE=actuators-read
     secrets:
       - db_name
@@ -48,7 +48,7 @@ services:
     volumes:
     - ".:/var/www/opensmarthome"
     environment:
-    - APP_ENV=dev
+    - APP_ENV=prod
     - MICROSERVICE=actuators-write
     secrets:
     - db_name

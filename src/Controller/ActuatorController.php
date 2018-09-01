@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Command\CreateActuator;
-use App\CommandHandler\Creation;
 use App\Domain\Actuator\Actuator;
 use App\Domain\Actuator\Type\Type;
 use App\Domain\Actuators;

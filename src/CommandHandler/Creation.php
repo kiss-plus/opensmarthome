@@ -4,20 +4,31 @@ namespace App\CommandHandler;
 
 use App\Command\CreateActuator;
 use App\Domain\Actuator\Actuator;
+use JMS\Serializer\SerializerInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Creation implements ConsumerInterface
 {
     /**
-     * @param AMQPMessage $msg The message
-     * @return bool false to reject and requeue, any other value to acknowledge
+     * @var SerializerInterface
      */
-    public function execute(AMQPMessage $msg)
+    private $serializer;
+
+    public function __construct(SerializerInterface $serializer)
     {
-        var_dump($msg->getBody());
+        $this->serializer = $serializer;
+    }
+
+    public function execute(AMQPMessage $msg): bool
+    {
+        /**
+         * @var CreateActuator $createCommand
+         */
+        $createCommand = $this->serializer->deserialize($msg->getBody(), CreateActuator::class, 'json');
         $actuator = new Actuator();
-        $actuator->handle(new CreateActuator("digital", "some name", "kdsfsfdjkn-42342-gfsfs"));
+        $actuator->handle($createCommand);
+
         return true;
     }
 }

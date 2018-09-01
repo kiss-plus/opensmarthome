@@ -1,0 +1,24 @@
+old_sound_rabbit_mq:
+    producers:
+        actuators:
+            connection:       default
+            exchange_options: {name: 'actuators_commands', type: direct}
+            service_alias:    actuators_command_bus
+
+    consumers:
+        actuators:
+            connection:       default
+            exchange_options: {name: 'actuators_commands', type: direct}
+            queue_options:    {name: 'actuators_commands_queue'}
+            callback:         App\CommandHandler\Creation
+#    producers:
+#        # use 'old_sound_rabbit_mq.task_producer' service to send data.
+#        task:
+#            connection:       default
+#            exchange_options: { name: 'task', type: direct }
+#    consumers:
+#        task:
+#            connection:       default
+#            exchange_options: { name: 'task', type: direct }
+#            queue_options:    { name: 'task'}
+#            callback:         App\Consumer\TaskConsumer
