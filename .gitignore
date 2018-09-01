@@ -15,8 +15,9 @@ yarn-error.log
 /.web-server-pid
 ###< symfony/web-server-bundle ###
 .idea
-/bin/console
-/bin/phpunit
+
+/bin/*
+!bin/console
 
 ###> phpunit/phpunit ###
 /phpunit.xml
