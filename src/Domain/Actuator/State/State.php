@@ -48,4 +48,9 @@ class State
     {
         $this->code = self::OFF;
     }
+
+    public function __toString(): string
+    {
+        return (string)$this->code;
+    }
 }

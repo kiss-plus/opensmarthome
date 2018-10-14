@@ -30,13 +30,18 @@ class Type
         }
     }
 
-    public function isDigital()
+    public function isDigital(): bool
     {
         return self::DIGITAL === $this->type;
     }
 
-    public function isAnalog()
+    public function isAnalog(): bool
     {
         return self::ANALOG === $this->type;
+    }
+
+    public function __toString(): string
+    {
+        return $this->type;
     }
 }

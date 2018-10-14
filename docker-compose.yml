@@ -27,7 +27,7 @@ services:
     volumes:
       - ".:/var/www/opensmarthome"
     environment:
-      - APP_ENV=prod
+      - APP_ENV=dev
       - MICROSERVICE=actuators-read
     secrets:
       - db_name
@@ -48,7 +48,7 @@ services:
     volumes:
     - ".:/var/www/opensmarthome"
     environment:
-    - APP_ENV=prod
+    - APP_ENV=dev
     - MICROSERVICE=actuators-write
     secrets:
     - db_name
@@ -64,7 +64,7 @@ services:
   actuators-write-worker:
     image: opensmarthome/actuators-write-worker
     environment:
-      - APP_ENV=dev
+      - APP_ENV=prod
     build:
       context: .
       dockerfile: docker/worker/Dockerfile
@@ -86,7 +86,7 @@ services:
         - "traefik.port=9000"
         - "traefik.frontend.rule=Host:portainer.opensmarthome.loc"
 
-  commands-bus:
+  commandsqueue:
     image: rabbitmq:3-management
     deploy:
       labels:
@@ -96,17 +96,7 @@ services:
     ports:
       - 5672:5672
 
-  events-bus:
-    image: rabbitmq:3-management
-    deploy:
-      labels:
-      - "traefik.port=15672"
-      - "traefik.frontend.rule=Host:events.opensmarthome.loc"
-      - "traefik.docker.network=opensmarthome_default"
-    ports:
-    - 5673:5672
-
-  database:
+  sql:
     image: mysql:5
     ports:
       - "3306:3306"
@@ -121,19 +111,39 @@ services:
       - db_user
       - db_password
 
+#  zookeeper:
+#    image: wurstmeister/zookeeper
+#
+#  eventstore:
+#    image: wurstmeister/kafka:latest
+#    ports:
+#      - target: 9094
+#        published: 9094
+#        protocol: tcp
+#        mode: host
+#    environment:
+#      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+#      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+#      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+
 secrets:
   db_root_password:
-    file: ./docker/secrets/db_root_password.example
+    file: ./docker/secrets/dev/db_root_password.example
   db_name:
-    file: ./docker/secrets/db_name.example
+    file: ./docker/secrets/dev/db_name.example
   db_user:
-    file: ./docker/secrets/db_user.example
+    file: ./docker/secrets/dev/db_user.example
   db_password:
-    file: ./docker/secrets/db_password.example
+    file: ./docker/secrets/dev/db_password.example
   db_host:
-    file: ./docker/secrets/db_host.example
+    file: ./docker/secrets/dev/db_host.example
   db_port:
-    file: ./docker/secrets/db_port.example
+    file: ./docker/secrets/dev/db_port.example
 
 volumes:
   portainer_data: ~

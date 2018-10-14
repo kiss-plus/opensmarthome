@@ -19,7 +19,11 @@ class ActuatorController extends FOSRestController
      */
     public function getActuatorsAction(): Actuators
     {
-        return new Actuators(new \ArrayObject());
+        return new Actuators(
+            new \ArrayObject(
+                $this->get('doctrine.orm.entity_manager')->getRepository(Actuator::class)->findAll()
+            )
+        );
     }
 
     /**
@@ -27,7 +31,7 @@ class ActuatorController extends FOSRestController
      */
     public function getActuatorAction(string $uuid): ?Actuator
     {
-        return new Actuator();
+        return $this->get('doctrine.orm.entity_manager')->getRepository(Actuator::class)->find($uuid);
     }
 
     public function postActuatorAction(Request $request): Response
@@ -36,6 +40,7 @@ class ActuatorController extends FOSRestController
         try {
             $uuid = Uuid::uuid4();
             $createActuator = new CreateActuator(Type::DIGITAL, $request->get('name'), $uuid->toString());
+
             $serializedCommand = $this
                 ->get('jms_serializer')
                 ->serialize($createActuator, 'json');

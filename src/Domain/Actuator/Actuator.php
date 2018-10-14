@@ -101,6 +101,7 @@ class Actuator
             $this->init($createActuatorCommand->uuid());
             $this->rename($createActuatorCommand->name());
             $this->changeType($createActuatorCommand->type());
+            $this->state = new State(State::OFF);
         };
     }
 

@@ -1,0 +1,5 @@
+App\Domain\Actuator\Type\Type:
+  type: embeddable
+  fields:
+    type:
+      type: string

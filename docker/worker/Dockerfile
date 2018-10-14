@@ -25,12 +25,14 @@ COPY docker/install-composer.sh bin/install-composer.sh
 COPY docker/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 COPY docker/secrets.sh /usr/local/bin/secrets.sh
 COPY docker/php.ini /usr/local/etc/php/php.ini
+COPY docker/worker/start.sh /usr/local/bin/start.sh
 
 RUN chmod +x bin/install-composer.sh \
     && chmod +x /usr/local/bin/secrets.sh \
+    && chmod +x /usr/local/bin/start.sh \
     && bin/install-composer.sh $PROJECT_DIR \
     && rm bin/install-composer.sh
 
 WORKDIR $PROJECT_DIR
 
-CMD /usr/local/bin/secrets.sh && $PROJECT_DIR/bin/console rabbitmq:consumer actuators
+CMD /usr/local/bin/start.sh

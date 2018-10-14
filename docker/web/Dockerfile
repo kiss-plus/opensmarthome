@@ -5,12 +5,15 @@ RUN apt-get update \
     wget \
     vim \
     git \
-    zlib1g-dev
+    zlib1g-dev \
+    librdkafka-dev
 
 RUN docker-php-ext-install -j$(nproc) pdo_mysql zip bcmath
 
 RUN pecl install xdebug-2.6.0 \
     && docker-php-ext-enable xdebug
+
+RUN pecl install rdkafka
 
 RUN a2enmod rewrite
 

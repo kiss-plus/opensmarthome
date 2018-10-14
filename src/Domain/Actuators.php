@@ -14,7 +14,7 @@ class Actuators
     /**
      * @var \ArrayObject|Actuator[]
      * @Serializer\XmlList(entry="actuator", inline=true)
-     * @Serializer\Type("array<App\Entity\DigitalActuator>")
+     * @Serializer\Type("array<App\Domain\Actuator\Actuator>")
      */
     private $actuators;
 
@@ -24,5 +24,10 @@ class Actuators
     public function __construct(\ArrayObject $itemsactuators)
     {
         $this->actuators = $itemsactuators;
+    }
+
+    public function get(): \ArrayObject
+    {
+        return $this->actuators;
     }
 }

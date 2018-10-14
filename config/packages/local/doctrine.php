@@ -1,5 +1,5 @@
 <?php
-$secretsDir = dirname(__DIR__, 3) . '/docker/secrets/';
+$secretsDir = dirname(__DIR__, 3) . '/docker/secrets/local/';
 $container->loadFromExtension(
     'doctrine', [
         'dbal' => [

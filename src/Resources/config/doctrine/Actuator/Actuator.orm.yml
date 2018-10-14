@@ -1,0 +1,17 @@
+App\Domain\Actuator\Actuator:
+  type: entity
+  table: actuators
+  id:
+    id:
+      type: string
+      lenght: 60
+      generator: { strategy: none}
+  fields:
+    name:
+      type: text
+    state:
+      embedded:
+        class: App\Domain\Actuator\State\State
+    type:
+      embedded:
+        class: App\Domain\Actuator\Type\Type

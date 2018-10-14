@@ -1,7 +1,7 @@
 old_sound_rabbit_mq:
     connections:
         default:
-            host:     'commands-bus'
+            host:     'commandsqueue'
             port:     5672
             user:     'guest'
             password: 'guest'

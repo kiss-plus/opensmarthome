@@ -1,0 +1,5 @@
+App\Domain\Actuator\State\State:
+  type: embeddable
+  fields:
+    code:
+      type: integer
